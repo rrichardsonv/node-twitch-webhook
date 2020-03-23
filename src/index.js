@@ -21,6 +21,7 @@ class TwitchWebhook extends EventEmitter {
    * @param {string} options.client_id - Client ID required for Twitch API calls
    * @param {string} options.callback - URL where notifications
    * will be delivered.
+   * @param {string} [options.server=null] - Server instance if already exists
    * @param {string} [options.secret=false] - Secret used to sign
    * notification payloads.
    * @param {number} [options.lease_seconds=864000] - Number of seconds until
@@ -68,14 +69,20 @@ class TwitchWebhook extends EventEmitter {
     this._apiPathname = url.parse(this._apiUrl).pathname
 
     this._subscriptions = {}
-
-    if (Object.keys(options.https).length) {
-      this._server = https.createServer(
-        options.https,
-        this._requestListener.bind(this)
-      )
+    
+    if (!options.server) {
+      if (Object.keys(options.https).length) {
+        this._server = https.createServer(
+          options.https,
+          this._requestListener.bind(this)
+        )
+      } else {
+        this._server = http.createServer(this._requestListener.bind(this))
+      }
     } else {
-      this._server = http.createServer(this._requestListener.bind(this))
+      const listenerz = this._requestListener.bind(this);
+      this._server = options.server;
+      this._server.on('request', listenerz);
     }
 
     this._server.on('error', this.emit.bind(this, 'error'))
