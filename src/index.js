@@ -396,6 +396,8 @@ class TwitchWebhook extends EventEmitter {
    * @param {Object} response - Response
    */
   _requestListener (request, response) {
+    if (!/twitch/i.test(request.url)) return;
+
     switch (request.method) {
       case 'GET':
         this._processConnection(request, response)
