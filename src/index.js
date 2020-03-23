@@ -53,6 +53,8 @@ class TwitchWebhook extends EventEmitter {
     if (this._options.lease_seconds === undefined) {
       this._options.lease_seconds = 864000
     }
+    
+    this._debug = options.debug || false;
 
     this._options.listen = options.listen || {}
     this._options.listen.host = options.listen.host || '0.0.0.0'
@@ -396,6 +398,9 @@ class TwitchWebhook extends EventEmitter {
    * @param {Object} response - Response
    */
   _requestListener (request, response) {
+    if (this._debug) {
+      console.log(request)
+    }
     if (!/twitch/i.test(request.url)) return;
 
     switch (request.method) {
