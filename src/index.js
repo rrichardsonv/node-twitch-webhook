@@ -401,7 +401,7 @@ class TwitchWebhook extends EventEmitter {
     if (this._debug) {
       console.log(request)
     }
-    if (!/twitch/i.test(request.url)) return;
+    if (!/twitch/i.test(url.parse(request.url).pathname)) return;
 
     switch (request.method) {
       case 'GET':
